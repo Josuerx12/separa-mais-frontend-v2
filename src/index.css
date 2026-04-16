@@ -1,0 +1,66 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap");
+@import "tailwindcss";
+
+:root {
+  --surface-white: #ffffff;
+  --surface-soft: #f8fafc;
+  --brand-cyan: #0891b2;
+  --brand-emerald: #059669;
+  --ink-strong: #0f172a;
+  --ink-soft: #475569;
+}
+
+body {
+  margin: 0;
+  background: var(--surface-soft);
+  color: var(--ink-strong);
+  font-family: "Manrope", "Segoe UI", sans-serif;
+}
+
+.font-display {
+  font-family: "Sora", "Segoe UI", sans-serif;
+}
+
+.landing-surface {
+  background:
+    radial-gradient(
+      circle at 88% 18%,
+      rgba(14, 165, 233, 0.14) 0%,
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 8% 92%,
+      rgba(16, 185, 129, 0.14) 0%,
+      transparent 36%
+    ),
+    var(--surface-white);
+}
+
+@keyframes reveal-up {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal-up {
+  opacity: 0;
+  animation: reveal-up 620ms cubic-bezier(0.2, 0.65, 0.15, 1) forwards;
+}
+
+.reveal-delay-1 {
+  animation-delay: 120ms;
+}
+
+.reveal-delay-2 {
+  animation-delay: 220ms;
+}
+
+.reveal-delay-3 {
+  animation-delay: 320ms;
+}
