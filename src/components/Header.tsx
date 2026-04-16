@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useCompany } from "../store/company.store";
+import { useAuth } from "../store/auth.store";
 
 const navItems = [
   { to: "/", label: "Inicio", exact: true },
   { to: "/cadastro", label: "Cadastro", exact: true },
+  { to: "/auth/login", label: "Autenticação", exact: false },
 ] as const;
+
+const authCompanyFieldsEnabled = ["Inicio", "Cadastro"];
 
 const baseLinkClass =
   "rounded-full px-3 py-2 text-sm font-semibold tracking-wide text-slate-700 transition hover:bg-cyan-50 hover:text-cyan-700 [&.active]:bg-cyan-100 [&.active]:text-cyan-800 [&.active]:font-bold";
@@ -13,6 +17,7 @@ const baseLinkClass =
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { companySlug, isCompanySlugInvalid } = useCompany();
+  const { isAuthenticated, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 shadow-sm shadow-cyan-100/50 backdrop-blur supports-backdrop-filter:bg-white/70">
@@ -72,17 +77,46 @@ const Header = () => {
             className="hidden items-center gap-2 md:flex"
             aria-label="Navegacao principal"
           >
-            {navItems.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                activeProps={{ className: "active" }}
-                activeOptions={{ exact: item.exact }}
-                className={baseLinkClass}
+            {navItems.map((item) => {
+              if (
+                companySlug &&
+                authCompanyFieldsEnabled.includes(item.label)
+              ) {
+                return;
+              }
+
+              if (
+                (!companySlug && item.label === "Autenticação") ||
+                (isAuthenticated && item.label === "Cadastro") ||
+                (isAuthenticated && item.label === "Autenticação")
+              ) {
+                return;
+              }
+
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  activeProps={{ className: "active" }}
+                  activeOptions={{ exact: item.exact }}
+                  className={baseLinkClass}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+
+            {isAuthenticated && (
+              <button
+                className={`${baseLinkClass} w-full`}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  signOut();
+                }}
               >
-                {item.label}
-              </Link>
-            ))}
+                Sair
+              </button>
+            )}
           </nav>
         )}
       </div>
@@ -94,18 +128,47 @@ const Header = () => {
           className={`${isMenuOpen ? "block" : "hidden"} border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_8px_24px_-16px_rgba(8,47,73,0.55)] md:hidden`}
         >
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-2">
-            {navItems.map((item) => (
-              <Link
-                key={`${item.to}-mobile`}
-                to={item.to}
-                activeProps={{ className: "active" }}
-                activeOptions={{ exact: item.exact }}
-                onClick={() => setIsMenuOpen(false)}
+            {navItems.map((item) => {
+              if (
+                companySlug &&
+                authCompanyFieldsEnabled.includes(item.label)
+              ) {
+                return;
+              }
+
+              if (
+                (!companySlug && item.label === "Autenticação") ||
+                (isAuthenticated && item.label === "Cadastro") ||
+                (isAuthenticated && item.label === "Autenticação")
+              ) {
+                return;
+              }
+
+              return (
+                <Link
+                  key={`${item.to}-mobile`}
+                  to={item.to}
+                  activeProps={{ className: "active" }}
+                  activeOptions={{ exact: item.exact }}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`${baseLinkClass} w-full`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+
+            {isAuthenticated && (
+              <button
                 className={`${baseLinkClass} w-full`}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  signOut();
+                }}
               >
-                {item.label}
-              </Link>
-            ))}
+                Sair
+              </button>
+            )}
           </div>
         </nav>
       )}

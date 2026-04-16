@@ -9,6 +9,7 @@ import Header from "../components/Header";
 import { Bounce, ToastContainer } from "react-toastify";
 import { useCompany } from "../store/company.store";
 import { useEffect } from "react";
+import { useAuth } from "../store/auth.store";
 
 const RootLayout = () => {
   const pathname = useRouterState({
@@ -16,10 +17,15 @@ const RootLayout = () => {
   });
   const { getCompanySlug, isCompanySlugLoading, isCompanySlugInvalid } =
     useCompany();
+  const { refreshToken } = useAuth();
 
   useEffect(() => {
     getCompanySlug();
   }, [getCompanySlug]);
+
+  useEffect(() => {
+    refreshToken();
+  }, [refreshToken]);
 
   if (isCompanySlugLoading) {
     return (

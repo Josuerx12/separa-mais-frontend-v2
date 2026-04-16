@@ -1,10 +1,12 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { CompanyService } from "../../services/company.service";
 import { toast } from "react-toastify";
+import { useAuth } from "../../store/auth.store";
+import { useCompany } from "../../store/company.store";
 
 const onlyDigits = (value: string) => value.replace(/\D/g, "");
 
@@ -128,6 +130,17 @@ export const Route = createFileRoute("/cadastro/")({
 });
 
 function CadastroPage() {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { companySlug } = useCompany();
+
+  if (companySlug || isAuthenticated) {
+    navigate({
+      to: "/",
+      replace: true,
+    });
+  }
+
   const {
     register,
     reset,
@@ -137,21 +150,22 @@ function CadastroPage() {
     resolver: zodResolver(signupSchema),
   });
 
-  const { mutate } = useMutation({
+  const { mutate, error } = useMutation({
     mutationFn: CompanyService.create,
     mutationKey: ["create-company"],
     onSuccess: () => {
       toast.success(
         "Empresa criada com sucesso! Agora você pode acessar o sistema. Verifique seu endereço de email para obter as instruções de login.",
       );
-      redirect({ to: `/` });
+      reset();
+      navigate({
+        to: "/",
+      });
     },
   });
 
-  const OnSubmit = (data: SignupFormValues) => {
+  const onSubmit = (data: SignupFormValues) => {
     mutate(data);
-
-    reset();
   };
 
   return (
@@ -168,7 +182,7 @@ function CadastroPage() {
         <div className="relative h-full min-h-180">
           <form
             noValidate
-            onSubmit={handleSubmit(OnSubmit)}
+            onSubmit={handleSubmit(onSubmit)}
             className="relative ml-auto flex h-full w-full max-w-xl flex-col gap-5 bg-white/93 p-5 backdrop-blur md:p-7"
           >
             <div>
@@ -256,6 +270,16 @@ function CadastroPage() {
                 );
               })}
             </div>
+
+            {error ? (
+              <div className="rounded-md bg-rose-50 p-3">
+                <span className="font-bold text-sm text-rose-900">Error:</span>
+                <p className="text-sm text-rose-700">
+                  {(error as any)?.response?.data ||
+                    "Ocorreu um erro ao criar a empresa. Tente novamente."}
+                </p>
+              </div>
+            ) : null}
 
             <button
               type="submit"
