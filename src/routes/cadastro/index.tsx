@@ -134,7 +134,7 @@ function CadastroPage() {
   const { isAuthenticated } = useAuth();
   const { companySlug } = useCompany();
 
-  if (companySlug || isAuthenticated) {
+  if (companySlug && !isAuthenticated) {
     navigate({
       to: "/",
       replace: true,

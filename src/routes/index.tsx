@@ -1,4 +1,5 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useAuth } from "../store/auth.store";
 
 const workflowSteps = [
   {
@@ -55,6 +56,16 @@ export const Route = createFileRoute("/")({
 });
 
 function IndexPage() {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  if (isAuthenticated) {
+    navigate({
+      to: "/dashboard",
+      replace: true,
+    });
+  }
+
   return (
     <div className="space-y-6 pb-8 sm:space-y-8 sm:pb-10">
       <section className="landing-surface grid overflow-hidden rounded-3xl border border-cyan-100/80 p-6 shadow-xl shadow-cyan-100/40 md:grid-cols-[1.1fr_0.9fr] md:gap-6 md:p-10">

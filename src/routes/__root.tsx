@@ -10,6 +10,7 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { useCompany } from "../store/company.store";
 import { useEffect } from "react";
 import { useAuth } from "../store/auth.store";
+import LoadingProfile from "../components/LoadingProfile";
 
 const RootLayout = () => {
   const pathname = useRouterState({
@@ -17,7 +18,7 @@ const RootLayout = () => {
   });
   const { getCompanySlug, isCompanySlugLoading, isCompanySlugInvalid } =
     useCompany();
-  const { refreshToken } = useAuth();
+  const { refreshToken, isUserLoading } = useAuth();
 
   useEffect(() => {
     getCompanySlug();
@@ -27,12 +28,8 @@ const RootLayout = () => {
     refreshToken();
   }, [refreshToken]);
 
-  if (isCompanySlugLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <span className="text-sm text-slate-500">Carregando...</span>
-      </div>
-    );
+  if (isCompanySlugLoading || isUserLoading) {
+    return <LoadingProfile />;
   }
 
   const isCompanyNotFoundPage = pathname === "/errors/companyNotFound";

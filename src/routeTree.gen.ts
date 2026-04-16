@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as CadastroIndexRouteImport } from './routes/cadastro/index'
 import { Route as ErrorsCompanyNotFoundRouteImport } from './routes/errors/companyNotFound'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -17,6 +18,11 @@ import { Route as AuthLoginRouteImport } from './routes/auth/login'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CadastroIndexRoute = CadastroIndexRouteImport.update({
@@ -40,12 +46,14 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/errors/companyNotFound': typeof ErrorsCompanyNotFoundRoute
   '/cadastro/': typeof CadastroIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/errors/companyNotFound': typeof ErrorsCompanyNotFoundRoute
   '/cadastro': typeof CadastroIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,18 +61,30 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/errors/companyNotFound': typeof ErrorsCompanyNotFoundRoute
   '/cadastro/': typeof CadastroIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/login' | '/errors/companyNotFound' | '/cadastro/'
+  fullPaths:
+    | '/'
+    | '/auth/login'
+    | '/errors/companyNotFound'
+    | '/cadastro/'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/login' | '/errors/companyNotFound' | '/cadastro'
+  to:
+    | '/'
+    | '/auth/login'
+    | '/errors/companyNotFound'
+    | '/cadastro'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
     | '/auth/login'
     | '/errors/companyNotFound'
     | '/cadastro/'
+    | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -72,6 +92,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   ErrorsCompanyNotFoundRoute: typeof ErrorsCompanyNotFoundRoute
   CadastroIndexRoute: typeof CadastroIndexRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -81,6 +102,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cadastro/': {
@@ -112,6 +140,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   ErrorsCompanyNotFoundRoute: ErrorsCompanyNotFoundRoute,
   CadastroIndexRoute: CadastroIndexRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -64,3 +64,44 @@ body {
 .reveal-delay-3 {
   animation-delay: 320ms;
 }
+
+@keyframes loading-shimmer {
+  0% {
+    background-position: -240px 0;
+  }
+
+  100% {
+    background-position: 240px 0;
+  }
+}
+
+.loading-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    rgba(203, 213, 225, 0.4) 0%,
+    rgba(226, 232, 240, 0.92) 50%,
+    rgba(203, 213, 225, 0.4) 100%
+  );
+  background-size: 240px 100%;
+  background-repeat: no-repeat;
+  animation: loading-shimmer 1.5s linear infinite;
+}
+
+@keyframes loading-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+.loading-float {
+  animation: loading-float 3.6s ease-in-out infinite;
+}
+
+.loading-delay-1 {
+  animation-delay: 420ms;
+}
