@@ -1,24 +1,6 @@
 import { create } from "zustand";
 import { CompanyService } from "../services/company.service";
-
-const getSlugFromHostname = (hostname: string): string => {
-  const normalizedHostname = hostname.toLowerCase();
-
-  const hostnameParts = normalizedHostname.split(".");
-  const separaMaisIndex = hostnameParts.indexOf("separamais");
-
-  if (separaMaisIndex <= 0) {
-    return "";
-  }
-
-  const slug = hostnameParts.slice(0, separaMaisIndex).join(".").trim();
-
-  if (!slug || slug === "www") {
-    return "";
-  }
-
-  return slug;
-};
+import { getCompanySlugFromLocation } from "../libs/company-host";
 
 type CompanyStore = {
   companySlug: string;
@@ -34,13 +16,7 @@ export const useCompany = create<CompanyStore>((set) => ({
   getCompanySlug: async () => {
     set({ isCompanySlugLoading: true, isCompanySlugInvalid: false });
 
-    const companySlug = getSlugFromHostname(window.location.hostname);
-
-    console.log(
-      "Company slug extracted from hostname:",
-      companySlug,
-      window.location.hostname,
-    );
+    const companySlug = getCompanySlugFromLocation(window.location);
 
     if (!companySlug) {
       set({

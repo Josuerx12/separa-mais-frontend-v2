@@ -1,18 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCompany } from "../../store/company.store";
 import { useMemo } from "react";
-
-const getRootHostname = (hostname: string): string => {
-  const normalizedHostname = hostname.toLowerCase();
-  const hostnameParts = normalizedHostname.split(".");
-  const separaMaisIndex = hostnameParts.indexOf("separamais");
-
-  if (separaMaisIndex <= 0) {
-    return normalizedHostname;
-  }
-
-  return hostnameParts.slice(separaMaisIndex).join(".");
-};
+import { getRootHostname } from "../../libs/company-host";
 
 const verificationChecklist = [
   {
