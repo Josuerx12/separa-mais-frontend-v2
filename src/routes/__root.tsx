@@ -11,6 +11,7 @@ import { useCompany } from "../store/company.store";
 import { useEffect } from "react";
 import { useAuth } from "../store/auth.store";
 import LoadingProfile from "../components/LoadingProfile";
+import AppSidebar from "../components/AppSidebar";
 
 const RootLayout = () => {
   const pathname = useRouterState({
@@ -18,7 +19,7 @@ const RootLayout = () => {
   });
   const { getCompanySlug, isCompanySlugLoading, isCompanySlugInvalid } =
     useCompany();
-  const { refreshToken, isUserLoading } = useAuth();
+  const { refreshToken, isUserLoading, isAuthenticated } = useAuth();
 
   useEffect(() => {
     getCompanySlug();
@@ -42,9 +43,20 @@ const RootLayout = () => {
     <>
       <div className="min-h-screen bg-[radial-gradient(circle_at_top,#ecfeff,#f8fafc_40%,#eef2ff)]">
         <Header />
-        <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
-          <Outlet />
-        </main>
+        <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6">
+          {isAuthenticated ? (
+            <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
+              <AppSidebar />
+              <main className="min-w-0">
+                <Outlet />
+              </main>
+            </div>
+          ) : (
+            <main className="mx-auto w-full max-w-6xl">
+              <Outlet />
+            </main>
+          )}
+        </div>
       </div>
       <ToastContainer
         position="top-right"

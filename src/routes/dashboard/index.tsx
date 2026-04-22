@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Link, Navigate, createFileRoute } from "@tanstack/react-router";
 import DashboardCard from "../../components/DashboardCard";
 import { useAuth } from "../../store/auth.store";
 
@@ -8,22 +8,6 @@ type MetricCard = {
   helper: string;
   badge: string;
   tone: "cyan" | "emerald" | "amber" | "rose";
-};
-
-type AssetRequestCard = {
-  requestId: string;
-  requester: string;
-  asset: string;
-  quantity: number;
-  openedAt: string;
-  priority: "Alta" | "Media" | "Baixa";
-};
-
-type StatusColumn = {
-  title: "Em separacao" | "Aguardando coleta" | "Canceladas" | "Concluidas";
-  tone: "cyan" | "amber" | "rose" | "emerald";
-  helper: string;
-  items: AssetRequestCard[];
 };
 
 const metricCards: MetricCard[] = [
@@ -57,120 +41,32 @@ const metricCards: MetricCard[] = [
   },
 ];
 
-const statusColumns: StatusColumn[] = [
+const quickAccessCards = [
   {
-    title: "Em separacao",
+    title: "Ativos",
     tone: "cyan",
-    helper: "Ativos em preparo pela equipe interna.",
-    items: [
-      {
-        requestId: "REQ-1802",
-        requester: "Maria Santos",
-        asset: "Notebook Dell Latitude",
-        quantity: 2,
-        openedAt: "09:15",
-        priority: "Alta",
-      },
-      {
-        requestId: "REQ-1804",
-        requester: "Pedro Carvalho",
-        asset: "Monitor 24 polegadas",
-        quantity: 4,
-        openedAt: "10:08",
-        priority: "Media",
-      },
-    ],
+    helper: "Acompanhe a separacao de material em um quadro kanban por status.",
+    actionLabel: "Abrir quadro",
+    to: "/ativos",
   },
   {
-    title: "Aguardando coleta",
-    tone: "amber",
-    helper: "Solicitacoes prontas aguardando retirada.",
-    items: [
-      {
-        requestId: "REQ-1793",
-        requester: "Ana Beatriz",
-        asset: "Smartphone corporativo",
-        quantity: 1,
-        openedAt: "08:47",
-        priority: "Alta",
-      },
-      {
-        requestId: "REQ-1798",
-        requester: "Rafael Lima",
-        asset: "Headset USB",
-        quantity: 6,
-        openedAt: "09:52",
-        priority: "Baixa",
-      },
-    ],
-  },
-  {
-    title: "Canceladas",
+    title: "Usuarios",
     tone: "rose",
-    helper: "Pedidos cancelados por indisponibilidade ou ajuste.",
-    items: [
-      {
-        requestId: "REQ-1788",
-        requester: "Juliana Costa",
-        asset: "Dock station",
-        quantity: 3,
-        openedAt: "07:30",
-        priority: "Media",
-      },
-      {
-        requestId: "REQ-1791",
-        requester: "Thiago Alves",
-        asset: "Teclado mecanico",
-        quantity: 2,
-        openedAt: "08:01",
-        priority: "Baixa",
-      },
-    ],
+    helper: "Gerencie perfis da empresa, permissoes e status de acesso.",
+    actionLabel: "Gerenciar usuarios",
+    to: "/usuarios",
   },
-  {
-    title: "Concluidas",
-    tone: "emerald",
-    helper: "Ativos separados e coletados com sucesso.",
-    items: [
-      {
-        requestId: "REQ-1779",
-        requester: "Carla Menezes",
-        asset: "Mouse sem fio",
-        quantity: 8,
-        openedAt: "06:55",
-        priority: "Baixa",
-      },
-      {
-        requestId: "REQ-1782",
-        requester: "Bruno Nascimento",
-        asset: "Cadeira ergonomica",
-        quantity: 1,
-        openedAt: "07:22",
-        priority: "Media",
-      },
-    ],
-  },
-];
-
-const priorityPillClass: Record<AssetRequestCard["priority"], string> = {
-  Alta: "bg-rose-100 text-rose-700",
-  Media: "bg-amber-100 text-amber-700",
-  Baixa: "bg-emerald-100 text-emerald-700",
-};
+] as const;
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardPage,
 });
 
 function DashboardPage() {
-  const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated) {
-    navigate({
-      to: "/",
-      replace: true,
-    });
+    return <Navigate to="/" replace />;
   }
 
   return (
@@ -185,17 +81,17 @@ function DashboardPage() {
               Central de solicitacoes de ativos
             </h1>
             <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-              Organize a entrada de pedidos, acompanhe cada status e mantenha a
-              equipe alinhada em tempo real com cards por etapa da operacao.
+              Acompanhe os principais indicadores do seu processo e acesse
+              rapidamente as areas de operacao do sistema.
             </p>
           </div>
 
-          <button
-            type="button"
+          <Link
+            to="/ativos"
             className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold tracking-wide text-white transition hover:bg-slate-800"
           >
-            Nova solicitacao
-          </button>
+            Abrir quadro de ativos
+          </Link>
         </div>
       </section>
 
@@ -216,61 +112,46 @@ function DashboardPage() {
       <section className="space-y-4">
         <div className="reveal-up reveal-delay-1">
           <h2 className="font-display text-2xl font-bold text-slate-900 sm:text-3xl">
-            Colunas por status da solicitacao
+            Acessos rapidos da operacao
           </h2>
           <p className="mt-1 text-sm text-slate-600 sm:text-base">
-            Cada card representa um pedido de ativo e mostra responsavel,
-            prioridade e horario de abertura para facilitar a priorizacao.
+            Navegue para o quadro kanban de separacao de material e para o
+            gerenciamento de usuarios da empresa.
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {statusColumns.map((column) => (
+        <div className="grid gap-4 md:grid-cols-2">
+          {quickAccessCards.map((item) => (
             <DashboardCard
-              key={column.title}
-              title={column.title}
-              subtitle={column.helper}
-              badge={`${column.items.length} itens`}
-              tone={column.tone}
+              key={item.title}
+              title={item.title}
+              subtitle={item.helper}
+              tone={item.tone}
               className="reveal-up"
             >
-              <div className="space-y-3">
-                {column.items.map((item) => (
-                  <DashboardCard
-                    key={item.requestId}
-                    title={item.requestId}
-                    subtitle={`${item.asset} • ${item.quantity} un.`}
-                    tone="default"
-                    className="bg-white"
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-2 text-xs text-slate-500">
-                        <span className="font-semibold text-slate-700">
-                          {item.requester}
-                        </span>
-                        <span>{item.openedAt}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between gap-2">
-                        <span
-                          className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${priorityPillClass[item.priority]}`}
-                        >
-                          Prioridade {item.priority}
-                        </span>
-                        <button
-                          type="button"
-                          className="text-xs font-semibold text-cyan-700 transition hover:text-cyan-800"
-                        >
-                          Abrir
-                        </button>
-                      </div>
-                    </div>
-                  </DashboardCard>
-                ))}
+              <div className="pt-1">
+                <Link
+                  to={item.to}
+                  className="inline-flex items-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-cyan-200 hover:text-cyan-700"
+                >
+                  {item.actionLabel}
+                </Link>
               </div>
             </DashboardCard>
           ))}
         </div>
+      </section>
+
+      <section className="reveal-up reveal-delay-2 rounded-3xl border border-slate-200 bg-white/85 p-6 shadow-sm shadow-slate-900/5">
+        <h2 className="font-display text-xl font-bold text-slate-900 sm:text-2xl">
+          Responsavel conectado
+        </h2>
+        <p className="mt-2 text-sm text-slate-600 sm:text-base">
+          Sessao ativa para {user?.name ?? "Usuario autenticado"}.{" "}
+          {user?.company?.name
+            ? `Empresa: ${user.company.name}.`
+            : "Gerencie os recursos da operacao com seguranca."}
+        </p>
       </section>
     </div>
   );

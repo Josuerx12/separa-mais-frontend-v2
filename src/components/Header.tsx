@@ -78,6 +78,10 @@ const Header = () => {
             aria-label="Navegacao principal"
           >
             {navItems.map((item) => {
+              if (isAuthenticated) {
+                return;
+              }
+
               if (
                 companySlug &&
                 authCompanyFieldsEnabled.includes(item.label)
@@ -129,6 +133,10 @@ const Header = () => {
         >
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-2">
             {navItems.map((item) => {
+              if (isAuthenticated) {
+                return;
+              }
+
               if (
                 companySlug &&
                 authCompanyFieldsEnabled.includes(item.label)

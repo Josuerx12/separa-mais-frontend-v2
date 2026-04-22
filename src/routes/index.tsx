@@ -1,5 +1,6 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../store/auth.store";
+import { useCompany } from "../store/company.store";
 
 const workflowSteps = [
   {
@@ -58,6 +59,22 @@ export const Route = createFileRoute("/")({
 function IndexPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { companySlug } = useCompany();
+  const hasPartnerCompany = Boolean(companySlug);
+
+  const primaryCta = {
+    to: hasPartnerCompany ? "/auth/login" : "/cadastro",
+    label: hasPartnerCompany
+      ? "Entrar com minha conta"
+      : "Cadastrar empresa e usuario",
+  };
+
+  const complementaryCta = {
+    to: hasPartnerCompany ? "/auth/login" : "/cadastro",
+    label: hasPartnerCompany
+      ? "Acessar pagina de login"
+      : "Quero iniciar meu cadastro",
+  };
 
   if (isAuthenticated) {
     navigate({
@@ -87,10 +104,10 @@ function IndexPage() {
 
           <div className="flex flex-wrap gap-3">
             <Link
-              to="/cadastro"
+              to={primaryCta.to}
               className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold tracking-wide text-white transition hover:-translate-y-0.5 hover:bg-slate-800"
             >
-              Cadastrar empresa e usuario
+              {primaryCta.label}
             </Link>
             <a
               href="#como-funciona"
@@ -101,9 +118,20 @@ function IndexPage() {
           </div>
 
           <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-            Usuario logado? Esta pagina inicial redireciona para o dashboard,
-            onde toda a gestao acontece em tempo real.
+            {hasPartnerCompany
+              ? "Empresa parceira identificada. Use o login para acessar seu painel de acompanhamento em tempo real."
+              : "Usuario logado? Esta pagina inicial redireciona para o dashboard, onde toda a gestao acontece em tempo real."}
           </div>
+
+          {hasPartnerCompany ? (
+            <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+              <p className="font-semibold">Pontos importantes para o login:</p>
+              <ul className="mt-2 list-disc space-y-1 pl-5">
+                <li>Use o email corporativo cadastrado para sua equipe.</li>
+                <li>Acesso liberado para acompanhar status e indicadores.</li>
+              </ul>
+            </div>
+          ) : null}
         </div>
 
         <div className="reveal-up reveal-delay-1 relative mt-8 md:mt-0">
@@ -216,10 +244,10 @@ function IndexPage() {
           </p>
 
           <Link
-            to="/cadastro"
+            to={complementaryCta.to}
             className="mt-5 inline-flex items-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-cyan-200 hover:text-cyan-700"
           >
-            Quero iniciar meu cadastro
+            {complementaryCta.label}
           </Link>
         </article>
       </section>

@@ -10,14 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UsuariosIndexRouteImport } from './routes/usuarios/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as CadastroIndexRouteImport } from './routes/cadastro/index'
+import { Route as AtivosIndexRouteImport } from './routes/ativos/index'
 import { Route as ErrorsCompanyNotFoundRouteImport } from './routes/errors/companyNotFound'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsuariosIndexRoute = UsuariosIndexRouteImport.update({
+  id: '/usuarios/',
+  path: '/usuarios/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
@@ -28,6 +35,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
 const CadastroIndexRoute = CadastroIndexRouteImport.update({
   id: '/cadastro/',
   path: '/cadastro/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AtivosIndexRoute = AtivosIndexRouteImport.update({
+  id: '/ativos/',
+  path: '/ativos/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ErrorsCompanyNotFoundRoute = ErrorsCompanyNotFoundRouteImport.update({
@@ -45,23 +57,29 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/errors/companyNotFound': typeof ErrorsCompanyNotFoundRoute
+  '/ativos/': typeof AtivosIndexRoute
   '/cadastro/': typeof CadastroIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/usuarios/': typeof UsuariosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/errors/companyNotFound': typeof ErrorsCompanyNotFoundRoute
+  '/ativos': typeof AtivosIndexRoute
   '/cadastro': typeof CadastroIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/usuarios': typeof UsuariosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/errors/companyNotFound': typeof ErrorsCompanyNotFoundRoute
+  '/ativos/': typeof AtivosIndexRoute
   '/cadastro/': typeof CadastroIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/usuarios/': typeof UsuariosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -69,30 +87,38 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/errors/companyNotFound'
+    | '/ativos/'
     | '/cadastro/'
     | '/dashboard/'
+    | '/usuarios/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth/login'
     | '/errors/companyNotFound'
+    | '/ativos'
     | '/cadastro'
     | '/dashboard'
+    | '/usuarios'
   id:
     | '__root__'
     | '/'
     | '/auth/login'
     | '/errors/companyNotFound'
+    | '/ativos/'
     | '/cadastro/'
     | '/dashboard/'
+    | '/usuarios/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthLoginRoute: typeof AuthLoginRoute
   ErrorsCompanyNotFoundRoute: typeof ErrorsCompanyNotFoundRoute
+  AtivosIndexRoute: typeof AtivosIndexRoute
   CadastroIndexRoute: typeof CadastroIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  UsuariosIndexRoute: typeof UsuariosIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -102,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/usuarios/': {
+      id: '/usuarios/'
+      path: '/usuarios'
+      fullPath: '/usuarios/'
+      preLoaderRoute: typeof UsuariosIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/': {
@@ -116,6 +149,13 @@ declare module '@tanstack/react-router' {
       path: '/cadastro'
       fullPath: '/cadastro/'
       preLoaderRoute: typeof CadastroIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ativos/': {
+      id: '/ativos/'
+      path: '/ativos'
+      fullPath: '/ativos/'
+      preLoaderRoute: typeof AtivosIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/errors/companyNotFound': {
@@ -139,8 +179,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthLoginRoute: AuthLoginRoute,
   ErrorsCompanyNotFoundRoute: ErrorsCompanyNotFoundRoute,
+  AtivosIndexRoute: AtivosIndexRoute,
   CadastroIndexRoute: CadastroIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  UsuariosIndexRoute: UsuariosIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
