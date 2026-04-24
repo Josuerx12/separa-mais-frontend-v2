@@ -1,4 +1,4 @@
-import { api } from "../libs/api";
+import { api } from "../lib/api";
 import Cookies from "js-cookie";
 
 export type LoginPayload = {

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCompany } from "../../store/company.store";
 import { useMemo } from "react";
-import { getRootHostname } from "../../libs/company-host";
+import { getRootHostname } from "../../lib/company-host";
 
 const verificationChecklist = [
   {

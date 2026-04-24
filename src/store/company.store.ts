@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { CompanyService } from "../services/company.service";
-import { getCompanySlugFromLocation } from "../libs/company-host";
+import { getCompanySlugFromLocation } from "../lib/company-host";
 
 type CompanyStore = {
   companySlug: string;

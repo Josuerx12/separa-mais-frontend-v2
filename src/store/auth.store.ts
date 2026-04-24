@@ -11,6 +11,12 @@ export interface IUser {
     name: string;
     slug: string;
   };
+  permissions: {
+    isOwner: true;
+    isAdmin: true;
+    isRequester: true;
+    isAlmoxarife: true;
+  };
 }
 
 export interface IAuth {

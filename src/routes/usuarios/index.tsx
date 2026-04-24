@@ -1,60 +1,35 @@
-import { Navigate, createFileRoute } from "@tanstack/react-router";
+import { Navigate, createFileRoute, useSearch } from "@tanstack/react-router";
 import { useAuth } from "../../store/auth.store";
-
-type TeamMember = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  role: "Administrador" | "Operador" | "Coleta";
-  status: "Ativo";
-};
-
-const rolePillClass: Record<TeamMember["role"], string> = {
-  Administrador: "bg-cyan-100 text-cyan-700",
-  Operador: "bg-amber-100 text-amber-700",
-  Coleta: "bg-emerald-100 text-emerald-700",
-};
-
-const statusPillClass = "bg-emerald-100 text-emerald-700";
+import CreateCompanyUserDialog from "../../components/dialogs/company-users/CreateCompanyUserDialog";
+import { useQuery } from "@tanstack/react-query";
+import { CompanyUserService } from "@/services/company-user.service";
+import { useCompany } from "@/store/company.store";
 
 export const Route = createFileRoute("/usuarios/")({
   component: UsuariosPage,
+  validateSearch: (search) => ({
+    page: Number(search.page ?? 1),
+    perPage: Number(search.perPage ?? 10),
+    search: search.search ?? "",
+    sort: search.sort ?? "createdAt",
+    order: search.order ?? "desc",
+  }),
 });
 
 function UsuariosPage() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const { companySlug } = useCompany();
 
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 
-  const teamMembers: TeamMember[] = [
-    {
-      id: user?.id ?? "USR-001",
-      name: user?.name ?? "Responsavel principal",
-      email: user?.email ?? "admin@empresa.com",
-      phone: user?.phone ?? "(00) 90000-0000",
-      role: "Administrador",
-      status: "Ativo",
-    },
-    {
-      id: "USR-102",
-      name: "Rafaela Martins",
-      email: "rafaela@empresa.com",
-      phone: "(11) 98888-4321",
-      role: "Operador",
-      status: "Ativo",
-    },
-    {
-      id: "USR-127",
-      name: "Joao Henrique",
-      email: "joao.henrique@empresa.com",
-      phone: "(11) 97777-8899",
-      role: "Coleta",
-      status: "Ativo",
-    },
-  ];
+  const params = useSearch({ from: "/usuarios/" });
+
+  const { data } = useQuery({
+    queryKey: ["companyUsers"],
+    queryFn: () => CompanyUserService.getCompanyUsers(companySlug, params),
+  });
 
   return (
     <div className="space-y-6 pb-8 sm:space-y-8 sm:pb-10">
@@ -77,12 +52,7 @@ function UsuariosPage() {
             </p>
           </div>
 
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold tracking-wide text-white transition hover:bg-slate-800"
-          >
-            Adicionar usuario
-          </button>
+          <CreateCompanyUserDialog />
         </div>
       </section>
 
@@ -99,10 +69,7 @@ function UsuariosPage() {
 
           <div className="flex flex-wrap gap-2">
             <span className="rounded-full bg-cyan-100 px-3 py-1 text-xs font-semibold text-cyan-800">
-              Total: {teamMembers.length}
-            </span>
-            <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
-              Ativos: {teamMembers.length}
+              Total: {data?.totalItems ?? 0}
             </span>
           </div>
         </div>
@@ -118,49 +85,33 @@ function UsuariosPage() {
                   Contato
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
-                  Perfil
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
                   Empresa
                 </th>
               </tr>
             </thead>
             <tbody>
-              {teamMembers.map((member) => (
+              {data?.items.map((member) => (
                 <tr key={member.id} className="border-t border-slate-200/90">
                   <td className="px-4 py-3 align-top">
                     <p className="text-sm font-semibold text-slate-900">
-                      {member.name}
+                      {member.user.name}
                     </p>
                     <p className="text-xs text-slate-500">ID: {member.id}</p>
                   </td>
                   <td className="px-4 py-3 align-top">
-                    <p className="text-sm text-slate-700">{member.email}</p>
-                    <p className="text-xs text-slate-500">{member.phone}</p>
-                  </td>
-                  <td className="px-4 py-3 align-top">
-                    <span
-                      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${rolePillClass[member.role]}`}
-                    >
-                      {member.role}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 align-top">
-                    <span
-                      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusPillClass}`}
-                    >
-                      {member.status}
-                    </span>
+                    <p className="text-sm text-slate-700">
+                      {member.user.email}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {member.user.phone}
+                    </p>
                   </td>
                   <td className="px-4 py-3 align-top">
                     <p className="text-sm text-slate-700">
-                      {user?.company?.name ?? "Empresa vinculada"}
+                      {member.company?.name ?? "Empresa vinculada"}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {user?.company?.slug ?? "slug-nao-disponivel"}
+                      {member.company?.slug ?? "slug-nao-disponivel"}
                     </p>
                   </td>
                 </tr>

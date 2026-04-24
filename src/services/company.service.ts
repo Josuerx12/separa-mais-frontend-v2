@@ -1,4 +1,4 @@
-import { api } from "../libs/api";
+import { api } from "../lib/api";
 import type { SignupFormValues } from "../routes/cadastro";
 
 export const CompanyService = {
