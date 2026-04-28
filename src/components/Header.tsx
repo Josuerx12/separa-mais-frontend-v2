@@ -16,7 +16,7 @@ const baseLinkClass =
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { companySlug, isCompanySlugInvalid } = useCompany();
+  const { company, companySlug, isCompanySlugInvalid } = useCompany();
   const { isAuthenticated, signOut } = useAuth();
 
   return (
@@ -34,9 +34,11 @@ const Header = () => {
               Separa+
             </span>
             <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-              {isCompanySlugInvalid || !companySlug
+              {isCompanySlugInvalid
                 ? "controle de ativos"
-                : companySlug}
+                : (company?.trandingName ??
+                  companySlug ??
+                  "controle de ativos")}
             </span>
           </span>
         </Link>

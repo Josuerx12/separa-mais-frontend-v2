@@ -169,7 +169,10 @@ const RequestedKanban = ({
           </div>
         ) : null}
 
-        {!isCompanySlugLoading && !isLoading && !isError && items.length === 0 ? (
+        {!isCompanySlugLoading &&
+        !isLoading &&
+        !isError &&
+        items.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-200 bg-white/70 px-4 py-5 text-center text-sm text-slate-500">
             Nenhuma solicitacao neste status.
           </div>
@@ -179,7 +182,7 @@ const RequestedKanban = ({
           ? items.map((request: IMaterialRequest) => (
               <DashboardCard
                 key={request.id}
-                title={`REQ-${request.id.slice(0, 8).toUpperCase()}`}
+                title={request.exitId}
                 subtitle={request.description || "Sem descricao"}
                 tone="default"
                 className="bg-white"

@@ -1,6 +1,7 @@
 import type { IMaterialRequest } from "@/interfaces/IMaterialRequest";
 import type { IPagination } from "@/interfaces/IPagination";
 import { api } from "@/lib/api";
+import type { TRequestNewMaterialRequest } from "@/zod/shemas/request-new-material-request.schema";
 
 export const TimelineStatus = {
   REQUESTED: "requested",
@@ -25,7 +26,7 @@ export const MaterialRequestService = {
     params: TGetMaterialRequestsByStatusParams = {},
   ) => {
     const response = await api.get<IPagination<IMaterialRequest>>(
-      "/material-requests",
+      "/material-requests/status",
       {
         params: {
           ...params,
@@ -39,13 +40,17 @@ export const MaterialRequestService = {
 
     return response.data;
   },
-  create: async (slug: string, data: any) => {
-    const response = await api.post("/material-requests", data, {
+  create: async ({
+    slug,
+    data,
+  }: {
+    slug: string;
+    data: TRequestNewMaterialRequest;
+  }) => {
+    await api.post("/material-requests", data, {
       headers: {
         "x-company-slug": slug,
       },
     });
-
-    return response.data;
   },
 };

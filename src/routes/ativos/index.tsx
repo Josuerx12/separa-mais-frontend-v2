@@ -5,6 +5,7 @@ import {
   TimelineStatus,
   type TimelineStatus as TimelineStatusType,
 } from "@/services/material-request.service";
+import RequestNewMaterialRequestDialog from "@/components/dialogs/material-requests/RequestNewMaterialRequestDialog";
 
 type StatusColumn = {
   status: TimelineStatusType;
@@ -51,7 +52,7 @@ export const Route = createFileRoute("/ativos/")({
 });
 
 function AtivosPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, permissions } = useAuth();
 
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
@@ -74,12 +75,7 @@ function AtivosPage() {
             </p>
           </div>
 
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold tracking-wide text-white transition hover:bg-slate-800"
-          >
-            Nova solicitacao
-          </button>
+          {permissions?.isRequester && <RequestNewMaterialRequestDialog />}
         </div>
       </section>
 

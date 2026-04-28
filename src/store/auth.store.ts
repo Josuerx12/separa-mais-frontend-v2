@@ -11,18 +11,20 @@ export interface IUser {
     name: string;
     slug: string;
   };
-  permissions: {
-    isOwner: true;
-    isAdmin: true;
-    isRequester: true;
-    isAlmoxarife: true;
-  };
+  permissions: IPermissions;
 }
 
+export interface IPermissions {
+  isOwner: true;
+  isAdmin: true;
+  isRequester: true;
+  isAlmoxarife: true;
+}
 export interface IAuth {
   isAuthenticated: boolean;
   isUserLoading: boolean;
   user?: IUser | null;
+  permissions?: IPermissions | null;
   refreshToken: () => Promise<void>;
   signIn: (data: { email: string; password: string }) => Promise<void>;
   signOut: () => void;
@@ -37,9 +39,13 @@ export const useAuth = create<IAuth>((set) => ({
 
       const res = await AuthService.getMe();
 
-      set({ user: res, isAuthenticated: true });
+      set({
+        user: res,
+        permissions: res.permissions,
+        isAuthenticated: true,
+      });
     } catch (error) {
-      set({ isAuthenticated: false, user: null });
+      set({ isAuthenticated: false, user: null, permissions: null });
     }
   },
   refreshToken: async () => {
@@ -50,9 +56,13 @@ export const useAuth = create<IAuth>((set) => ({
 
       const res = await AuthService.getMe();
 
-      set({ user: res, isAuthenticated: true });
+      set({
+        user: res,
+        permissions: res.permissions,
+        isAuthenticated: true,
+      });
     } catch (error) {
-      set({ isAuthenticated: false, user: null });
+      set({ isAuthenticated: false, user: null, permissions: null });
     } finally {
       set({ isUserLoading: false });
     }
@@ -60,6 +70,6 @@ export const useAuth = create<IAuth>((set) => ({
   signOut: () => {
     AuthService.signOut();
 
-    set({ isAuthenticated: false, isUserLoading: false });
+    set({ isAuthenticated: false, isUserLoading: false, permissions: null });
   },
 }));

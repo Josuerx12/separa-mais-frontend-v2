@@ -1,9 +1,11 @@
 import { create } from "zustand";
+import type { ICompany } from "../interfaces/ICompany";
 import { CompanyService } from "../services/company.service";
 import { getCompanySlugFromLocation } from "../lib/company-host";
 
 type CompanyStore = {
   companySlug: string;
+  company: ICompany | null;
   isCompanySlugLoading: boolean;
   isCompanySlugInvalid: boolean;
   getCompanySlug: () => Promise<void>;
@@ -11,6 +13,7 @@ type CompanyStore = {
 
 export const useCompany = create<CompanyStore>((set) => ({
   companySlug: "",
+  company: null,
   isCompanySlugLoading: true,
   isCompanySlugInvalid: false,
   getCompanySlug: async () => {
@@ -21,6 +24,7 @@ export const useCompany = create<CompanyStore>((set) => ({
     if (!companySlug) {
       set({
         companySlug: "",
+        company: null,
         isCompanySlugLoading: false,
         isCompanySlugInvalid: false,
       });
@@ -28,15 +32,17 @@ export const useCompany = create<CompanyStore>((set) => ({
     }
 
     try {
-      await CompanyService.getCompanyBySlug(companySlug);
+      const company = await CompanyService.getCompanyBySlug(companySlug);
       set({
         companySlug,
+        company,
         isCompanySlugLoading: false,
         isCompanySlugInvalid: false,
       });
     } catch {
       set({
         companySlug,
+        company: null,
         isCompanySlugLoading: false,
         isCompanySlugInvalid: true,
       });
